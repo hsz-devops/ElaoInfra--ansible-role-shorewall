@@ -1,10 +1,16 @@
-#ZONE    INTERFACE    BROADCAST    OPTIONS
+# {{ ansible_managed }}
+#
+# For information about entries in this file, type "man shorewall-interfaces"
+###############################################################################
+?FORMAT 2
+###############################################################################
+#ZONE    INTERFACE       OPTIONS
 
 {% for zone in elao_shorewall_config.zones %}
-{% if zone.interface is defined -%}
+{% if zone.interface is defined %}
 {{ zone.name }}{% for i in range(9 - zone.name|length) %} {% endfor %}
-{{- zone.interface.name }}{% for i in range(13 - zone.interface.name|length) %} {% endfor %}
-{{- zone.interface.broadcast }}{% for i in range(13 - zone.interface.broadcast|length) %} {% endfor %}
+{{- zone.interface.name }} {% for i in range(17 - zone.interface.name|length) %} {% endfor %}
 {{- zone.interface.options }}
-{%- endif %}  
-{% endfor %}  
+{% endif %}
+{% endfor %}
+

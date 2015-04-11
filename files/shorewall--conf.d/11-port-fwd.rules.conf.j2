@@ -1,0 +1,47 @@
+# {{ ansible_managed }}
+#
+{% for host in elao_shorewall_config.rules_fwd %}
+#
+{% if (host.name is not defined) or (host.ip is not defined) or (host.fwd is not defined) %}
+# {{ host }}
+{% else %}
+# Port forwarding for {{ host.name }} @ {{ host.ip }}
+#
+{% for rule in host.fwd %}
+{% if (rule.proto is not defined) or (rule.proto=="tcp") or (rule.proto=="udp") %}
+{{ "DNAT" }} {% for in in range(16 - 4) %} {% endfor %}
+{{- "net" }} {% for in in range(10 - 3) %} {% endfor %}
+{{- host.zone | default("loc") }}:{{ host.ip }}:{{ rule.int_port | default(rule.ext_port) }} {% for in in range(6) %} {% endfor %}
+{{- rule.proto | default("-") }} {% for i in range(9 - rule.proto|default('-')|length) %} {% endfor %}
+{{- rule.ext_port }} {% for i in range(17 - rule.ext_port | length ) %} {% endfor %}
+{{- "-" }} {% for i in range(17 - 1) %} {% endfor %}
+{{- "-" }} {% for i in range(17 - 1) %} {% endfor %}
+{{- rule.rate_limit|default('-') }} {% for i in range(17 - rule.rate_limit|default('-')|length) %} {% endfor %}
+{{- rule.user_grp  |default('-') }} {% for i in range(9 - rule.user_grp|default('-') |length ) %} {% endfor %}
+{{- rule.mark      |default('-') }} {% for i in range(9 - rule.mark|default('-')|length) %} {% endfor %}
+{{- rule.conn_limit|default('-') }} {% for i in range(17 - rule.conn_limit|default('-')|length) %} {% endfor %}
+{{- rule.time   |default('-') }} {% for i in range(17 - rule.time|default('-')|length) %} {% endfor %}
+{{- rule.headers|default('-') }} {% for i in range(17 - rule.headers|default('-')|length) %} {% endfor %}
+{{- rule.switch |default('-') }} {% for i in range(17 - rule.switch|default('-')|length) %} {% endfor %}
+{{- rule.helper |default('-') }}
+{% else %}
+{{ "DNAT" }} {% for in in range(16 - 4) %} {% endfor %}
+{{- "net" }} {% for in in range(10 - 3) %} {% endfor %}
+{{- host.zone | default("loc") }}:{{ host.ip }} {% for in in range(6) %} {% endfor %}
+{{- rule.proto | default('-') }} {% for i in range(9 - rule.proto|default('-')|length) %} {% endfor %}
+{{- '-' }} {% for i in range(17 - '-' |length) %} {% endfor %}
+{{- '-' }} {% for i in range(17 - '-' |length) %} {% endfor %}
+{{- '-' }} {% for i in range(17 - '-' |length) %} {% endfor %}
+{{- rule.rate_limit|default('-') }} {% for i in range(17 - rule.rate_limit|default('-')|length) %} {% endfor %}
+{{- rule.user_grp  |default('-') }} {% for i in range(9 - rule.user_grp|default('-') |length ) %} {% endfor %}
+{{- rule.mark      |default('-') }} {% for i in range(9 - rule.mark|default('-')|length) %} {% endfor %}
+{{- rule.conn_limit|default('-') }} {% for i in range(17 - rule.conn_limit|default('-')|length) %} {% endfor %}
+{{- rule.time   |default('-') }} {% for i in range(17 - rule.time|default('-')|length) %} {% endfor %}
+{{- rule.headers|default('-') }} {% for i in range(17 - rule.headers|default('-')|length) %} {% endfor %}
+{{- rule.switch |default('-') }} {% for i in range(17 - rule.switch|default('-')|length) %} {% endfor %}
+{{- rule.helper |default('-') }}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+

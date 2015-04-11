@@ -1,0 +1,26 @@
+# {{ ansible_managed }}
+# HighSkillz 
+# v1.2.0     2015-04-11
+
+# http://serverfault.com/questions/591732/shorewall-logging-to-custom-file
+
+# send Shorewall messages to a specific file
+:msg, contains, "Shorewall:" /var/log/shorewall
+& stop
+
+# use of ~ is deprecated
+#:msg, contains, "Shorewall:"  /var/log/shorewall
+#& ~
+
+## Reiner format. not tested yet
+#if $msg contains 'Shorewall:' then {
+#    action(type="omfile" file="/var/log/shorewall")
+#    stop
+#}
+   
+:msg, contains, "IPv4: martian source " /var/log/shorewall
+& stop
+
+:msg, contains, "ll header: " /var/log/shorewall
+& stop
+

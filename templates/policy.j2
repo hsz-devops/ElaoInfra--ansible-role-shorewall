@@ -1,16 +1,19 @@
-#SOURCE    DEST    POLICY     LOG      LIMIT:       CONNLIMIT:
-#                             LEVEL    BURST        MASK
+# {{ ansible_managed }}
+#
+# For information about entries in this file, type "man shorewall-policy"
+###############################################################################
+#SOURCE         DEST            POLICY          LOG LEVEL       LIMIT:BURST
 
-{% for item in elao_shorewall_config.policy -%}
+{% for item in elao_shorewall_config.policy %}
 {% if item.source is not defined %}
 
 # {{ item }}
 {% else %}
-{{ item.source }}{% for i in range(11 - item.source|length) %} {% endfor %}
-{{- item.dest }}{% for i in range(8 - item.dest|length) %} {% endfor %}
+{{ item.source }} {% for i in range(15 - item.source|length) %} {% endfor %}
+{{- item.dest }} {% for i in range(15 - item.dest|length) %} {% endfor %}
 {{- item.policy }}
-{%- if item.log is defined %}{% for i in range(11 - item.policy|length) %} {% endfor %}{{ item.log }}{% endif %}
+{%- if item.log is defined %}{% for i in range(17 - item.policy|length) %} {% endfor %}{{ item.log }}{% endif %}
 
 {% endif %}
-{% endfor %} 
-#LAST LINE -- DO NOT REMOVE
+{% endfor %}
+

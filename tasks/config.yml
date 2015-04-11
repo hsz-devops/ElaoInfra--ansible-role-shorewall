@@ -1,5 +1,37 @@
 ---
 
+- name: config > create conf.d folder for custom configs using plain files
+  file:
+    path: /etc/shorewall/conf.d
+    owner: root
+    group: root
+    mode:  0755
+    state: directory
+
+- name: config > Configure shorewall auto-restart
+  lineinfile:
+    dest: /etc/default/shorewall
+    regexp: "^[# \t]*startup[ \t]*=[ \t*]*"
+    line: "startup={{ elao_shorewall_config_autostart }}"
+    backup: yes
+    state: present
+
+- name: config > Tell ShoreWall where to look for logging data for display
+  lineinfile:
+    dest: /etc/shorewall/shorewall.conf
+    regexp: "^[# \t]*LOGFILE[ \t]*=[ \t]*.*$"
+    line: "LOGFILE=/var/log/shorewall"
+    backup: yes
+    state: present
+
+#- name: config > Create empty logfile if none exists
+#  file:
+#    dest: "{{ elao_shorewall_config_logfile }}"
+#    owner: root
+#    group: root
+#    mode:  0644
+#    state: touch
+#
 - name: config > Writing params file.
   copy:
     src:   "{{ item }}"
@@ -10,15 +42,52 @@
   with_items:
     - params
 
-- name: config > Writing files.
+- name: config > Enable IP forwarding
+  sysctl:
+    name: "{{item}}"
+    value: "{{ elao_shorewall_config_forwarding }}"
+    sysctl_set: yes
+    state:      present
+    reload:     yes
+    sysctl_file: /etc/sysctl.d/44-shorewall-forwarding.conf
+  with_items:
+    - "net.ipv4.ip_forward"
+
+- name: config > Shorewall main config files
   template:
     src:  "{{ item.src }}"
     dest: /etc/shorewall/{{ item.dest }}
   with_items:
+    - { src: "{{ elao_shorewall_config_templates.zones }}",      dest: zones }
+    - { src: "{{ elao_shorewall_config_templates.interfaces }}", dest: interfaces }
     - { src: "{{ elao_shorewall_config_templates.policy }}",     dest: policy }
     - { src: "{{ elao_shorewall_config_templates.masq }}",       dest: masq }
-    - { src: "{{ elao_shorewall_config_templates.interfaces }}", dest: interfaces }
-    - { src: "{{ elao_shorewall_config_templates.zones }}",      dest: zones }
     - { src: "{{ elao_shorewall_config_templates.rules }}",      dest: rules }
   notify:
     - shorewall restart
+
+- name: config > Shorewall additional config files
+  template:
+    src:  "{{ item }}"
+    dest: "/etc/shorewall/conf.d/{{ item | basename | regex_replace('^(.*)\\.j2$', '\\\\1') }}"
+  with_fileglob:
+    - "shorewall--conf.d/*.conf.j2"
+  notify:
+    - shorewall restart
+
+- name: config > Additional config files (rsyslog)
+  template:
+    src:  "{{ item }}.j2"
+    dest: /etc/{{ item }}
+  with_items:
+    - "rsyslog.d/40-shorewall.conf"
+  notify:
+    - rsyslog restart
+  
+- name: config > Additional config files (logrotate)
+  template:
+    src:  "{{ item }}.j2"
+    dest: /etc/{{ item }}
+  with_items:
+    - "logrotate.d/shorewall"
+

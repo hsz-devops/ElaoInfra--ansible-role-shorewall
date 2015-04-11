@@ -1,5 +1,12 @@
 ---
 
+- name: packages > Uninstalling conflicting packages if installed
+  apt:
+    name:  "{{ item }}"
+    state: absent
+  with_items:
+    - ufw
+
 - name: packages > Installing required packages
   apt:
     name:  "{{ item }}"

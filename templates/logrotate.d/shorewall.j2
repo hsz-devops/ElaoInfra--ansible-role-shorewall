@@ -1,0 +1,35 @@
+# {{ ansible_managed }}
+# https://www.wsartori.com/blog/2011/8/2/logging-shorewall-iptables-separate-files-rsyslog/
+
+/var/log/shorewall-init.log {
+    weekly
+    rotate 4
+    compress
+    missingok
+    create 0640 root adm
+    sharedscripts
+}
+
+/var/log/shorewall {
+    daily
+    size 20M
+    rotate 366
+    compress
+    compressext .gz
+    delaycompress
+    sharedscripts
+    missingok
+    postrotate
+        reload rsyslog >/dev/null 2>&1 || true
+    endscript
+    create 0640 syslog adm
+}
+
+#/var/log/shorewall {
+#    weekly
+#    rotate 52
+#    compress
+#    compressext .gz
+#    missingok
+#    create 0640 root adm
+#}

@@ -12,3 +12,10 @@ elao_shorewall_config:
   masq:   {}
   zones:  {}
   rules:  {}
+
+elao_shorewall_config_autostart: 1
+#elao_shorewall_config_logfile: /var/log/shorewall
+elao_shorewall_config_forwarding: 1
+
+shorewall__outside_is_public: true
+

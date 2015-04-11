@@ -1,0 +1,28 @@
+# {{ ansible_managed }}
+
+{% if shorewall__outside_is_public %}
+
+# prevents internal nodes to access private networks (10.0.0.0,172.16.0.0 and 192.168.0.0) on the outside
+# some providers (like hetzner) don't like when BTSync tries to contact other hosts with those addresses
+
+{% if false %}
+# block all outbound traffic to private addresses
+REJECT   loc     net:10.0.0.0/8        tcp     -   -           -       -
+REJECT   loc     net:192.168.0.0/16    tcp     -   -           -       -
+REJECT   loc     net:172.16.0.0/12     tcp     -   -           -       -
+
+REJECT   loc     net:10.0.0.0/8        udp     -   -           -       -
+REJECT   loc     net:192.168.0.0/16    udp     -   -           -       -
+REJECT   loc     net:172.16.0.0/12     udp     -   -           -       -
+
+{% else %}
+# block outbound traffic to private addresses only if it is on port 55055 (BTSync)
+REJECT   loc     net:10.0.0.0/8        tcp     -   55055       -       -
+REJECT   loc     net:192.168.0.0/16    tcp     -   55055       -       -
+REJECT   loc     net:172.16.0.0/12     tcp     -   55055       -       -
+
+REJECT   loc     net:10.0.0.0/8        udp     -   55055       -       -
+REJECT   loc     net:192.168.0.0/16    udp     -   55055       -       -
+REJECT   loc     net:172.16.0.0/12     udp     -   55055       -       -
+{% endif %}
+{% endif %}

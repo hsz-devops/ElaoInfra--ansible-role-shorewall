@@ -6,6 +6,8 @@ This role will assume the setup of [shorewall](http://shorewall.net/)
 
 It's part of the ELAO [Ansible stack](http://ansible.elao.com) but can be used as a stand alone component.
 
+(Improvements by [JoaoCC/HighSkillz](https://github.com/joaocc) for Shorewall 4.5 and easier extensibility with existing rules fies)
+
 ## Requirements
 
 - Ansible 1.7.2+
@@ -84,19 +86,16 @@ elao_shorewall_config:
       type: ipv4
       interface:
         name:       vmbr0
-        broadcast:  detect
         options:    "blacklist,routeback,bridge,nosmurfs"
     - name: dmz
       type: ipv4
       interface:
         name:       venet0
-        broadcast:  detect
         options:    routeback
     - name: vrack
       type: ipv4
       interface:
         name:       vmbr1
-        broadcast:  detect
         options:    "blacklist,routeback,bridge,nosmurfs"
 
   rules:
@@ -121,12 +120,12 @@ elao_shorewall_config:
     - From DMZ
     - { source: dmz,   dest: dmz,   policy: ACCEPT }
     - { source: dmz,   dest: net,   policy: ACCEPT }
-    - { source: dmz,   dest: vrack, policy: ACCEPT }
+    - { source: dmz,   dest: vrack, policy: DROP }
     - { source: dmz,   dest: fw,    policy: DROP,   log: info }
     - VRACK
     - { source: vrack, dest: dmz,   policy: ACCEPT }
     - { source: vrack, dest: fw,    policy: ACCEPT }
-    - Public Bridge (read the policy warnings!)
+    - Public Bridge (read the policy warnings @ http://myatus.com/p/guide-firewall-and-router-with-proxmox-extending-its-us/)
     - { source: net,   dest: net,   policy: DROP }
     - { source: net,   dest: fw,    policy: DROP,   log: info }
     - { source: net,   dest: dmz,   policy: DROP,   log: info }

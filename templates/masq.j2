@@ -1,6 +1,27 @@
-#INTERFACE      SOURCE          ADDRESS         PROTO   PORT(S) IPSEC   MARK
-{% for item in elao_shorewall_config.masq -%}
-{{ item.interface }}{% for i in range(16 - item.interface|length) %} {% endfor %}
-{{- item.source }}
-{% endfor %}  
-# LAST LINE -- DO NOT REMOVE
+# {{ ansible_managed }}
+#
+# For information about entries in this file, type "man shorewall-masq"
+################################################################################################################
+#INTERFACE:DEST         SOURCE          ADDRESS         PROTO   PORT(S) IPSEC   MARK    USER/   SWITCH  ORIGINAL
+#                                                                                       GROUP           DEST
+
+SHELL cat /etc/shorewall/conf.d/*.masq.conf 2> /dev/null || true
+
+{% for item in elao_shorewall_config.masq %}
+{% if item.interface is not defined %}
+
+# {{ item }}
+{% else %}
+{{ item.interface }} {% for i in range(16 - item.interface|length) %} {% endfor %}
+{{- item.source }} {% for i in range(16 - item.source|length) %} {% endfor %}
+{{- item.address |default('-') }} {% for i in range(16 - item.address|default('-')|length) %} {% endfor %}
+{{- item.proto | default('-') }} {% for i in range(11 - item.proto|default('-')|length) %} {% endfor %}
+{{- item.port  | default('-') }} {% for i in range(11 - item.port|default('-')|length) %} {% endfor %}
+{{- item.ipsec |default('-') }} {% for i in range(11 - item.ipsec|default('-')|length) %} {% endfor %}
+{{- item.mark  |default('-') }} {% for i in range(11 - item.mark|default('-')|length) %} {% endfor %}
+{{- item.user_grp |default('-') }} {% for i in range(11 - item.user_grp|default('-')|length) %} {% endfor %}
+{{- item.switch   |default('-') }} {% for i in range(11 - item.switch|default('-')|length) %} {% endfor %}
+{{- item.orig_dest |default('-') }} {% for i in range(11 - item.orig_dest|default('-')|length) %} {% endfor %}
+{% endif %}
+{% endfor %}
+

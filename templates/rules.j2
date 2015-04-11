@@ -1,16 +1,39 @@
-#ACTION          SOURCE                   DEST                        PROTO   DEST        SOURCE     ORIGINAL
-#                                                                             PORT        PORT(S)    DEST
-{% for item in elao_shorewall_config.rules -%}
+# {{ ansible_managed }}
+#
+# For information about entries in this file, type "man shorewall-rules"
+######################################################################################################################################################################################################
+#ACTION         SOURCE   DEST                    PROTO   DEST    SOURCE          ORIGINAL        RATE            USER/   MARK    CONNLIMIT       TIME            HEADERS         SWITCH          HELPER
+#                                                        PORT    PORT(S)         DEST            LIMIT           GROUP
+#
+#SECTION ALL
+#SECTION ESTABLISHED
+#SECTION RELATED
+#SECTION INVALID
+#SECTION UNTRACKED
+SECTION NEW
+
+SHELL cat /etc/shorewall/conf.d/*.rules.conf 2> /dev/null || true
+
+{% for item in elao_shorewall_config.rules %}
 {% if item.action is not defined %}
 
 # {{ item }}
 {% else %}
 {{ item.action }} {% for i in range(16 - item.action|length) %} {% endfor %}
-{{- item.source }} {% for i in range(24 - item.source|length) %} {% endfor %}
-{{- item.dest }} {% for i in range(27 - item.dest|length) %} {% endfor %}
-{{- item.proto|default('-') }} {% for i in range(7 - item.proto|default('-')|length) %} {% endfor %}
-{{- item.dest_port|default('-') }} {% for i in range(11 - item.dest_port|default('-')|length) %} {% endfor %}
-{{- item.source_port|default('-') }} {% for i in range(11 - item.source_port|default('-')|length) %} {% endfor %}
-{{- item.original_dest|default('-') }} {% for i in range(11 - item.original_dest|default('-')|length) %} {% endfor %}
+{{- item.source }} {% for i in range(10 - item.source|length) %} {% endfor %}
+{{- item.dest }} {% for i in range(21 - item.dest|length) %} {% endfor %}
+{{- item.proto|default('-') }} {% for i in range(9 - item.proto|default('-')|length) %} {% endfor %}
+{{- item.dest_port|default('-') }} {% for i in range(17 - item.dest_port|default('-')|length) %} {% endfor %}
+{{- item.source_port|default('-') }} {% for i in range(17 - item.source_port|default('-')|length) %} {% endfor %}
+{{- item.original_dest|default('-') }} {% for i in range(17 - item.original_dest|default('-')|length) %} {% endfor %}
+{{- item.rate_limit|default('-') }} {% for i in range(17 - item.rate_limit|default('-')|length) %} {% endfor %}
+{{- item.user_grp|default('-') }} {% for i in range(9 - item.user_grp|default('-')|length) %} {% endfor %}
+{{- item.mark|default('-') }} {% for i in range(9 - item.mark|default('-')|length) %} {% endfor %}
+{{- item.conn_limit|default('-') }} {% for i in range(17 - item.conn_limit|default('-')|length) %} {% endfor %}
+{{- item.time|default('-') }} {% for i in range(17 - item.time|default('-')|length) %} {% endfor %}
+{{- item.headers|default('-') }} {% for i in range(17 - item.headers|default('-')|length) %} {% endfor %}
+{{- item.switch|default('-') }} {% for i in range(17 - item.switch|default('-')|length) %} {% endfor %}
+{{- item.helper|default('-') }}
 {% endif %}
-{% endfor %} 
+{% endfor %}
+
